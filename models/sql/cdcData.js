@@ -32,6 +32,10 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        qrcode: {
+            type: DataTypes.BLOB,
+            allowNull: false
+        },
         isLocked : {
             type: DataTypes.BOOLEAN
         }

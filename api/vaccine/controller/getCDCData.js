@@ -5,6 +5,9 @@ module.exports = async function(req, res) {
     query = _.pickBy(query , _.identity);
     _.set(query , "isLocked" , 0);
     console.log(query);
+    if (_.get(query , 'VaccDoses') == 0) {
+        delete query['VaccDoses'];
+    }
     try {
         let cdcDataResult = await sequelize.models['cdcData'].findAll({
             where :  {

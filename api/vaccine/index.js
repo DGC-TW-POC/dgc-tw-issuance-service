@@ -12,7 +12,7 @@ router.get('/CDCData' , validateParams({
     Birthday: joi.string().allow(''),
     InocuDate: joi.string().allow(''),
     VaccID: joi.string().allow(''),
-    VaccDoses: joi.number().min(1).empty('')
+    VaccDoses: joi.number().empty('')
 } , "query" ,{
     allowUnknown: false
 }) , require('./controller/getCDCData'));
