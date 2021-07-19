@@ -1,5 +1,9 @@
-const { Sequelize, DataTypes } = require('sequelize');
-
+const { Sequelize, DataTypes, Model } = require('sequelize');
+/**
+ * 
+ * @param {Sequelize} sequelize 
+ * @returns {Model}
+ */
 module.exports = (sequelize) => {
     const cdcData = sequelize.define('cdcData',
     {
@@ -9,15 +13,6 @@ module.exports = (sequelize) => {
         },
         IdNo: {
             type: DataTypes.STRING,
-            allowNull: false
-        },
-        Name: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        Birthday: {
-            //https://stackoverflow.com/questions/16847672/is-there-a-simple-way-to-make-sequelize-return-its-date-time-fields-in-a-partic/17276989
-            type: DataTypes.DATEONLY,
             allowNull: false
         },
         InocuDate: {
@@ -33,16 +28,35 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         qrcode: {
-            type: DataTypes.BLOB,
-            allowNull: false
+            type: DataTypes.BLOB
+        },
+        dgci_hash : {
+            type: DataTypes.STRING(512)
         },
         isLocked : {
             type: DataTypes.BOOLEAN
         }
     },
     {
-        freezeTableName: true
-        // 这是其他模型参数
+        freezeTableName: true,
+        indexes : [
+            {
+                fields : ["IdNo"]
+            } ,
+            {
+                fields: ["AgencyCode"]
+            }
+        ]
     });
+    const person = require('./person')(sequelize);
+    const agency = require('./agency')(sequelize);
+    cdcData.belongsTo(person , {
+        foreignKey: "IdNo" ,
+        targetKey: "IdNo"
+    });
+    cdcData.belongsTo(agency , {
+        foreignKey: "AgencyCode" ,
+        targetKey: "AgencyCode"
+    })
     return cdcData;
 }

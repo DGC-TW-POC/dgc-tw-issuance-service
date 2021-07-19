@@ -8,6 +8,8 @@ module.exports = {
         username : "username",
         password : "password",
         database : "database" ,
-        hostName : "localhost"
+        hostName : "localhost",
+        init: false,
+        fakeData: false
     }
 }
