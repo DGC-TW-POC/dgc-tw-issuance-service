@@ -2,7 +2,7 @@
     "name": "cdc-vaccine-service",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -22,6 +22,7 @@
         "express": "^4.16.3",
         "express-session": "^1.16.2",
         "joi": "^17.4.0",
+        "js-base64": "^3.6.1",
         "lodash": "^4.17.20",
         "moment": "^2.24.0",
         "mongoose": "^5.10.4",
@@ -33,5 +34,9 @@
         "sequelize": "^6.6.4",
         "sequelize-msnodesqlv8": "^0.2.6-beta.8",
         "tedious": "^11.0.9"
+    },
+    "devDependencies": {
+        "fake-data-generator-taiwan": "^1.0.4",
+        "faker": "^5.5.3"
     }
 }
