@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Base64 = require('js-base64');
+const tough = require('tough-cookie');
 //https://stackoverflow.com/questions/38275753/how-to-remove-empty-values-from-object-using-lodash
 /**
  * remove all empty fields in nestedObj
@@ -37,11 +38,27 @@ function decodebase64Query(req , res , next) {
         return next();
     } catch (e) {
         console.error(e);
-        return res.status(400).send("Bad request");
+        return res.status(400).send({
+            code: 400 ,
+            message: "Bad request",
+            detail: e
+        });
     }
+}
+
+function getUserVabJar (req) {
+    let jar = new tough.CookieJar();
+    let sessionVabApp = _.get(req.session , "vabApp");
+    if (req && sessionVabApp) {
+        req.session.vabApp.split(";").map(function (value) {
+            jar.setCookieSync(value, "https://1922.gov.tw");
+        })
+    }
+    return jar;
 }
 
 module.exports = {
     removeEmpty : removeEmpty,
-    decodebase64Query: decodebase64Query
+    decodebase64Query: decodebase64Query,
+    getUserVabJar: getUserVabJar
 }
