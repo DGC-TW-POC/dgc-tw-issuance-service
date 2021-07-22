@@ -14,8 +14,10 @@ const config = require('./config/config');
 const port = config.server.port;
 const app = express();
 
+(async ()=> {
+    const { sequelize } = await require('./models/sql/index');
+})();
 
-const sequelize = require('./models/sql/index');
 require('rootpath')();
 app.use(compress());
 app.use(flash());
@@ -55,7 +57,7 @@ app.use((err, req, res, next) => {
 
     next();
 });
-app.use(cookieParser());
+app.use(cookieParser('yx]P^uj0\\[zMR7p/'));
 //login
 app.use(session({
     secret: 'micalasecret',
