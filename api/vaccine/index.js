@@ -12,11 +12,12 @@ router.get('/CDCData' , decodebase64Query , validateParams({
     person: joi.object().keys({
         IdNo: joi.string().allow(''),
         Name: joi.string().allow(''),
-        Birthday: joi.string().allow(''),    
+        Birthday: joi.string().allow(''),
     }),
     InocuDate: joi.string().allow(''),
     VaccID: joi.string().allow(''),
-    VaccDoses: joi.number().empty('')
+    VaccDoses: joi.number().empty(''),
+    page: joi.number().default(1)
 } , "query" ,{
     allowUnknown: false
 }) , require('./controller/getCDCData'));

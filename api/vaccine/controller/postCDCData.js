@@ -1,14 +1,17 @@
-const sequelize = require('../../../models/sql/index');
 const _ = require('lodash');
-const person = require('../../../models/sql/person');
 
 const personFields = ["NHIId", "IdNo", "Name", "Birthday", "isLocked"];
 const vaccineFields = ["IdNo", "AgencyCode", "InocuDate", "VaccID", "VaccDoses", "qrcode", "dgci_hash", "isLocked"];
 module.exports = async function (req, res) {
-    storeVaccineData(sequelize ,req.body, res.status(500).send);
+    const  sequelize  = await require('../../../models/sql');
+    storeVaccineData(sequelize ,req.body, (e)=> {
+        return res.status(500).send(e);
+    }).then((result)=> {
+        return res.json(result);
+    });
 }
 
-async function storeVaccineData(iSequelize=sequelize , item, onError = (e) => { }) {
+async function storeVaccineData(iSequelize={} , item, onError = (e) => { }) {
     try {
         _.set(item, "isLocked", 0);
         item.AgencyCode = _.last(item.AgencyCode.split('-'));

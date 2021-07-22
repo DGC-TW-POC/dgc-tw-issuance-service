@@ -58,8 +58,13 @@ function generateFakePerson () {
     //let address = twGenerator.Address.generate();
     let birth = faker.date.past(100 , moment("2021-01-01").toDate());
     let dob = moment(birth).format("YYYY-MM-DD");
-    
+    let numberStrs = "0123456789";
+    let NHIId = "";
+    for (let i = 0 ; i < 12 ; i++) {
+        NHIId += numberStrs[faker.datatype.number(numberStrs.length-1)];
+    }
     let person = {
+        NHIId: NHIId,
         IdNo: idNo,
         Name: name,
         Birthday: dob
@@ -74,6 +79,7 @@ function generateFakeVaccine(iPerson) {
         IdNo: iPerson.IdNo,
         Name: iPerson.Name,
         Birthday: iPerson.Birthday,
+        NHIId: iPerson.NHIId,
         InocuDate: "",
         VaccID: "",
         VaccDoses: 1

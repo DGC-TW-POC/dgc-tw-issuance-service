@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 const config = require('../../config/config');
 const { generateFakeData } = require('./fakeDataGenerator/index');
 const { storeVaccineData } = require('../../api/vaccine/controller/postCDCData');
@@ -41,7 +41,18 @@ async function doFakeData () {
     const generateCount = 1000;
     for (let i = 0 ; i < generateCount ; i++)  {
         let fakeData = generateFakeData();
+        let havePerson = await sequelize.models['person'].findOne({
+            where : {
+                [Op.or] : [
+                    {IdNo : fakeData[0].IdNo}
+                ]
+            }
+        });
         for (let fakeVaccineData of fakeData) {
+            if (havePerson) {
+                i--;
+                break;
+            }
             await storeVaccineData(sequelize, fakeVaccineData , (e)=> {
                 process.exit(1);
             });
@@ -49,34 +60,6 @@ async function doFakeData () {
     }
     console.log("!!!fake data generated!!!");
 }
-(async () => {
-    try {
-        if (config.db.init) {
-            await init();
-            if (config.db.fakeData) {
-                doFakeData();
-            }
-            return;
-        }
-        await sequelize.authenticate();
-
-        console.log('Connection has been established successfully.');
-
-        await sequelize.models['person'].sync();
-        console.log("The table for the `person` model was just (re)created!");
-
-        
-        await sequelize.models['agency'].sync();
-        console.log("The table for the `agency` model was just (re)created!")
-
-        
-        await sequelize.models['cdcData'].sync();
-        console.log("The table for the `cdcData` model was just (re)created!");
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-        process.exit(1);
-    }
-})();
 
 function dropForeignKeyConstraints(database) {
     //this is a hack for dev only!
@@ -101,4 +84,32 @@ function dropForeignKeyConstraints(database) {
 /**
  * @type {Sequelize}
  */
-module.exports = sequelize;
+module.exports = (async function () {
+    try {
+        if (config.db.init) {
+            await init();
+            if (config.db.fakeData) {
+                doFakeData();
+            }
+            return;
+        }
+        await sequelize.authenticate();
+
+        console.log('Connection has been established successfully.');
+
+        await sequelize.models['person'].sync();
+        console.log("The table for the `person` model was just (re)created!");
+
+        
+        await sequelize.models['agency'].sync();
+        console.log("The table for the `agency` model was just (re)created!")
+
+        
+        await sequelize.models['cdcData'].sync();
+        console.log("The table for the `cdcData` model was just (re)created!");
+        return sequelize;
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+        process.exit(1);
+    }
+})();

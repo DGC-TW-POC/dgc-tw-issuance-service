@@ -1,6 +1,6 @@
-const sequelize = require('../../../models/sql/index');
 const _ = require('lodash');
 module.exports = async function(req, res) {
+    const  sequelize  = await require('../../../models/sql');
     let query = req.params;
     console.log(query);
     try {

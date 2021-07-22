@@ -1,11 +1,13 @@
-const sequelize = require('../../../models/sql/index');
 const _ = require('lodash');
 const { removeEmpty } = require('../../apiService');
 const { Op } = require('sequelize');
 module.exports = async function(req, res) {
+    const  sequelize  = await require('../../../models/sql');
     let query = req.query;
     query = removeEmpty(query);
     _.set(query , "isLocked" , 0);
+    let page = _.get(query, "page");
+    delete query['page'];
     if (_.get(query , 'VaccDoses') == 0) {
         delete query['VaccDoses'];
     }
@@ -20,7 +22,7 @@ module.exports = async function(req, res) {
         _.set(personQuery , 'Name' , nameLikeOp);
     }
     try {
-        let cdcDataResult = await sequelize.models['cdcData'].findAll({
+        let findOption = {
             where :  {
                 ...cdcDataQuery
             } ,
@@ -44,8 +46,18 @@ module.exports = async function(req, res) {
                     }
                 }
             ]
+        }
+        let cdcDataResult = await sequelize.models['cdcData'].findAll({
+            ...findOption,
+            limit: 10,
+            offset: 10 * (page-1)
         });
-        return res.json(cdcDataResult);
+        let count = await sequelize.models['cdcData'].count(findOption);
+        let cdcDataResponse = {
+            count : count ,
+            rows : [...cdcDataResult]
+        }
+        return res.json(cdcDataResponse);
     } catch (e) {
         console.error(e);
         res.status(500).send(e);

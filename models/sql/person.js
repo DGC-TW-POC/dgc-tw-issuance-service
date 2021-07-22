@@ -20,6 +20,12 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        FirstName: {
+            type: DataTypes.STRING
+        } , 
+        LastName: {
+            type: DataTypes.STRING
+        },
         Birthday: { //生日
             //https://stackoverflow.com/questions/16847672/is-there-a-simple-way-to-make-sequelize-return-its-date-time-fields-in-a-partic/17276989
             type: DataTypes.DATEONLY,
