@@ -1,0 +1,44 @@
+version: '3.4'
+services:
+    postgres:
+        image: library/postgres:9.6
+        container_name: dgc-issuance-service-postgres
+        ports:
+          - 5432:5432
+        environment:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          restart: unless-stopped
+        networks:
+          persistence:
+    dgc-tw-vaccine-service:
+        build:
+          context : ./
+          dockerfile : Dockerfile
+        container_name: dgc-tw-vaccine-service
+        command: >
+          /bin/sh -c '
+          while ! nc -z postgres 5432;
+          do
+            echo "waiting for database ...";
+            sleep 3;
+          done;
+          echo "db is ready!";
+          pm2-runtime start ecosystem.config.js;
+          '
+        volumes :
+          - ./:/nodejs/dgc-tw-vaccine-service
+          - dgc-tw-vaccine-service-node_modules:/nodejs/dgc-tw-vaccine-service/node_modules
+        ports:
+          - 8081:8081
+        depends_on:
+          - postgres
+        tty : true
+        restart: on-failure:3
+        stdin_open : true
+        
+volumes:
+    raccoon-node_modules:
+    raccoon-gyp-build:
+    raccoon-dcmtk-linux:

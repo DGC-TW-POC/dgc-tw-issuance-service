@@ -4,15 +4,16 @@ const personFields = ["NHIId", "IdNo", "Name", "Birthday", "isLocked"];
 const vaccineFields = ["IdNo", "AgencyCode", "InocuDate", "VaccID", "VaccDoses", "qrcode", "dgci_hash", "isLocked"];
 module.exports = async function (req, res) {
     const  sequelize  = await require('../../../models/sql');
-    storeVaccineData(sequelize ,req.body, (e)=> {
+    storeVaccineData(req.body, (e)=> {
         return res.status(500).send(e);
     }).then((result)=> {
         return res.json(result);
     });
 }
 
-async function storeVaccineData(iSequelize={} , item, onError = (e) => { }) {
+async function storeVaccineData(item, onError = (e) => { }) {
     try {
+        const  sequelize  = await require('../../../models/sql');
         _.set(item, "isLocked", 0);
         item.AgencyCode = _.last(item.AgencyCode.split('-'));
         let query = {
@@ -23,7 +24,7 @@ async function storeVaccineData(iSequelize={} , item, onError = (e) => { }) {
             IdNo: item.IdNo
         }
 
-        let storedPerson = await iSequelize.models['person'].findOne({
+        let storedPerson = await sequelize.models['person'].findOne({
             where: {
                 ...personQuery
             }
@@ -33,9 +34,9 @@ async function storeVaccineData(iSequelize={} , item, onError = (e) => { }) {
             for (let field of personFields) {
                 personData[field] = item[field];
             }
-            await iSequelize.models['person'].create(personData);
+            await sequelize.models['person'].create(personData);
         }
-        let storedData = await iSequelize.models['cdcData'].findOne({
+        let storedData = await sequelize.models['cdcData'].findOne({
             where: {
                 ...query
             }
@@ -44,7 +45,7 @@ async function storeVaccineData(iSequelize={} , item, onError = (e) => { }) {
             let updateResult = await storedData.update(item);
             return updateResult.toJSON();
         } else {
-            let insertResult = await iSequelize.models['cdcData'].create(item);
+            let insertResult = await sequelize.models['cdcData'].create(item);
             return insertResult.toJSON();
         }
     } catch (e) {

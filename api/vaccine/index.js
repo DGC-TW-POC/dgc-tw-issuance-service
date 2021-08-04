@@ -25,4 +25,6 @@ router.get('/CDCData' , decodebase64Query , validateParams({
 router.post('/CDCData' , require('./controller/postCDCData'));
 router.delete('/CDCData/:id' , require('./controller/deleteCDCData'));
 
+router.post('/issueQRCode' , require('./controller/postIssueQRCode'));
+
 module.exports = router;

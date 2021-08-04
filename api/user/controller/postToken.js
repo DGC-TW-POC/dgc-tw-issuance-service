@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const { Op } = require('sequelize');
 const nodeFetch = require('node-fetch');
-const { getUserVabJar } = require('../../apiService')
+const { getUserVabJar, encryptData } = require('../../apiService')
 
 const authMethodImp = {
     "身份證+健保卡": async (req) => {
@@ -72,6 +72,7 @@ module.exports = async function (req, res) {
         }, "A!t:v%dDt&M$ML2", {
             expiresIn: 1000 * 60 * 60
         });
+        req.session.user = encryptData(username);
         res.cookie('token', token, {
             signed: true,
             httpOnly: true,

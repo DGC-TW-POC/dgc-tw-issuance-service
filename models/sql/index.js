@@ -1,5 +1,5 @@
 const { Sequelize, Op } = require('sequelize');
-const config = require('../../config/config');
+let config = require('../../config/config');
 const { generateFakeData } = require('./fakeDataGenerator/index');
 const { storeVaccineData } = require('../../api/vaccine/controller/postCDCData');
 const sequelize = new Sequelize(config.db.database  , config.db.username , config.db.password , {
@@ -32,6 +32,7 @@ async function init () {
 
         await sequelize.models['cdcData'].sync({ force: true });
         console.log("The table for the `cdcData` model was just (re)created!");
+        config.db.init = false;
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
@@ -53,7 +54,7 @@ async function doFakeData () {
                 i--;
                 break;
             }
-            await storeVaccineData(sequelize, fakeVaccineData , (e)=> {
+            await storeVaccineData(fakeVaccineData , (e)=> {
                 process.exit(1);
             });
         }
@@ -80,19 +81,20 @@ function dropForeignKeyConstraints(database) {
     })
     .then(() => database);
 }
-
+(async ()=> {
+    if (config.db.init) {
+        await init();
+        if (config.db.fakeData) {
+            doFakeData();
+        }
+        return;
+    }
+})();
 /**
  * @type {Sequelize}
  */
 module.exports = (async function () {
     try {
-        if (config.db.init) {
-            await init();
-            if (config.db.fakeData) {
-                doFakeData();
-            }
-            return;
-        }
         await sequelize.authenticate();
 
         console.log('Connection has been established successfully.');
