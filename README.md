@@ -2,6 +2,7 @@
 EU疫苗護照概念式驗證開發後端。
 - 語言: Node.js
 - 資料庫採ORM , 目前使用mssql開發
+- [模擬欄位參考資料來源](https://www.cdc.gov.tw/File/Get/6IyAgb9Y0ol4AvVm5YLlwA)
 
 ## 進度
 目前有的功能如下
